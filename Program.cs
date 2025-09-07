@@ -1,4 +1,6 @@
 using System.Text.Json.Serialization;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using ProdApi.Context;
@@ -40,17 +42,24 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// Konfiguracja serializacji enumów jako stringi w JSON
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
+// Konfiguracja DbContext z SQLite
 builder.Services.AddDbContext<TaskDbContext>(
     options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 builder.Services.AddAutoMapper(cfg => { }, AppDomain.CurrentDomain.GetAssemblies());
 
+// Rejestracja repozytorium
 builder.Services.AddScoped<ITaskItemRepository, TaskItemRepository>();
+
+// Rejestruje wszystkie walidatory z tego assembly
+builder.Services.AddFluentValidationAutoValidation()
+    .AddValidatorsFromAssemblyContaining<Program>();
 
 
 var app = builder.Build();

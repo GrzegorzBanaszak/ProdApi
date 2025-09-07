@@ -39,7 +39,7 @@ IaC: Terraform (App Service, SQL, Key Vault)
 
 ### Etap 2 – Jakość kodu (tydz. 2)
 
-- [ ] Walidacja (FluentValidation)
+- [x] Walidacja (FluentValidation)
 - [ ] Logi (Serilog)
 - [ ] Obsługa błędów (middleware)
 - [ ] Testy jednostkowe (xUnit + Moq)
