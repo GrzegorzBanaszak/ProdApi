@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using ProdApi.Context;
 using ProdApi.Dtos;
 using ProdApi.Models;
+using ProdApi.Repository;
 
 namespace ProdApi.Controllers
 {
@@ -12,19 +13,19 @@ namespace ProdApi.Controllers
     [ApiController]
     public class TaskItemController : ControllerBase
     {
-        private readonly TaskDbContext _context;
+        private readonly ITaskItemRepository _repository;
         private readonly IMapper _mapper;
 
-        public TaskItemController(TaskDbContext context, IMapper mapper)
+        public TaskItemController(ITaskItemRepository repository, IMapper mapper)
         {
-            _context = context;
+            _repository = repository;
             _mapper = mapper;
         }
 
         [HttpGet]
         public async Task<ActionResult<TaskItemDto>> GetAllTasks()
         {
-            var tasks = await _context.Tasks.ToListAsync();
+            var tasks = await _repository.GetAllAsync();
             return Ok(_mapper.Map<IEnumerable<TaskItemDto>>(tasks));
         }
 
@@ -38,8 +39,8 @@ namespace ProdApi.Controllers
 
             var taskItem = TaskItem.Create(task.Title, task.Description, task.Status);
 
-            _context.Tasks.Add(taskItem);
-            await _context.SaveChangesAsync();
+            await _repository.AddAsync(taskItem);
+
 
             return CreatedAtAction(nameof(GetAllTasks), new { id = taskItem.Id }, task);
         }
@@ -52,7 +53,7 @@ namespace ProdApi.Controllers
                 return BadRequest("Task is null.");
             }
 
-            var existingTask = _context.Tasks.FirstOrDefault(t => t.Id == id);
+            var existingTask = await _repository.GetByIdAsync(id);
             if (existingTask == null)
             {
                 return NotFound("The task record couldn't be found.");
@@ -60,9 +61,7 @@ namespace ProdApi.Controllers
 
             existingTask.UpdateTaskItem(task.Title, task.Description, task.Status);
 
-            _context.Tasks.Update(existingTask);
-            await _context.SaveChangesAsync();
-
+            await _repository.UpdateAsync(existingTask);
 
             return NoContent();
         }
@@ -70,14 +69,13 @@ namespace ProdApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTask(Guid id)
         {
-            var existingTask = _context.Tasks.FirstOrDefault(t => t.Id == id);
+            var existingTask = await _repository.GetByIdAsync(id);
             if (existingTask == null)
             {
                 return NotFound("The task record couldn't be found.");
             }
 
-            _context.Tasks.Remove(existingTask);
-            await _context.SaveChangesAsync();
+            await _repository.DeleteAsync(existingTask);
 
 
             return NoContent();
