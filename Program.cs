@@ -5,12 +5,24 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using ProdApi.Context;
 using ProdApi.Repository;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+// Dodajemy Seriloga zamiast domyślnego loggera
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console() // logi w konsoli
+    .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day) // logi do pliku
+    .Enrich.FromLogContext()
+    .MinimumLevel.Information()
+    .CreateLogger();
+
+builder.Host.UseSerilog();
+
 builder.Services.AddControllers();
 
 // Konfiguracja swagger z obsługą JWT
@@ -57,12 +69,16 @@ builder.Services.AddAutoMapper(cfg => { }, AppDomain.CurrentDomain.GetAssemblies
 // Rejestracja repozytorium
 builder.Services.AddScoped<ITaskItemRepository, TaskItemRepository>();
 
+
 // Rejestruje wszystkie walidatory z tego assembly
 builder.Services.AddFluentValidationAutoValidation()
     .AddValidatorsFromAssemblyContaining<Program>();
 
 
 var app = builder.Build();
+
+// Middleware logowania requestów
+app.UseSerilogRequestLogging();
 
 // Dodanie swagger
 app.UseSwagger();
