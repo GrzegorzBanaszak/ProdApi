@@ -33,9 +33,9 @@ IaC: Terraform (App Service, SQL, Key Vault)
 
 ### Etap 1 – Fundamenty (tydz. 1)
 
-- [ ] Projekt ASP.NET Core Web API
-- [ ] Encja `TaskItem` + CRUD (EF Core + SQL)
-- [ ] Migracje bazy danych
+- [x] Projekt ASP.NET Core Web API
+- [x] Encja `TaskItem` + CRUD (EF Core + SQL)
+- [x] Migracje bazy danych
 
 ### Etap 2 – Jakość kodu (tydz. 2)
 

@@ -50,7 +50,7 @@ project.fragment.lock.json
 # Publish Web Output
 *.[Pp]ublish.xml
 *.[Pp]ublishProfiles/
-
+*.db*
 # Entity Framework
 *.mdf
 *.ldf
