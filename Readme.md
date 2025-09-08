@@ -41,7 +41,7 @@ IaC: Terraform (App Service, SQL, Key Vault)
 
 - [x] Walidacja (FluentValidation)
 - [x] Logi (Serilog)
-- [ ] Obsługa błędów (middleware)
+- [x] Obsługa błędów (middleware)
 - [ ] Testy jednostkowe (xUnit + Moq)
 - [ ] Testy integracyjne (WebApplicationFactory)
 

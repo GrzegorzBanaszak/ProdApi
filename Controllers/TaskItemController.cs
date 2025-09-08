@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProdApi.Context;
+using ProdApi.DomainException;
 using ProdApi.Dtos;
 using ProdApi.Models;
 using ProdApi.Repository;
@@ -37,6 +38,8 @@ namespace ProdApi.Controllers
         {
             _logger.LogInformation("Pobieranie zadania o Id: {Id}", id);
             var task = await _repository.GetByIdAsync(id);
+            if (task == null) throw new NotFoundException($"Task {id} not found");
+
             return Ok(_mapper.Map<TaskItemDto>(task));
         }
 

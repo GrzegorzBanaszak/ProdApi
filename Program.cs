@@ -4,6 +4,7 @@ using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using ProdApi.Context;
+using ProdApi.Middleware;
 using ProdApi.Repository;
 using Serilog;
 
@@ -79,6 +80,8 @@ var app = builder.Build();
 
 // Middleware logowania requestów
 app.UseSerilogRequestLogging();
+// Middleware obsługujące błędów
+app.UseMiddleware<ErrorHandlingMiddleware>();
 
 // Dodanie swagger
 app.UseSwagger();
