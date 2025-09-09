@@ -12,6 +12,9 @@ public class TaskDbContext : DbContext
 
     public DbSet<TaskItem> Tasks { get; set; }
     public DbSet<Tag> Tags { get; set; }
+    public DbSet<User> Users { get; set; }
+
+
 
     override protected void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -41,6 +44,16 @@ public class TaskDbContext : DbContext
             e.HasKey(t => t.Id);
             e.Property(t => t.Name).IsRequired().HasMaxLength(50);
             e.HasIndex(t => t.Name).IsUnique();
+        });
+
+        modelBuilder.Entity<User>(e =>
+        {
+            e.HasKey(t => t.Id);
+            e.Property(t => t.Email).IsRequired();
+            e.Property(t => t.HashPassword).IsRequired();
+            e.Property(t => t.Role).IsRequired();
+            e.HasIndex(t => t.Email).IsUnique();
+
         });
     }
 }

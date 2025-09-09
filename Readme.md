@@ -47,8 +47,8 @@ IaC: Terraform (App Service, SQL, Key Vault)
 
 ### Etap 3 – Bezpieczeństwo (tydz. 3)
 
-- [ ] Autoryzacja JWT / Azure Entra ID
-- [ ] Role (`Admin`, `Worker`)
+- [x] Autoryzacja JWT / Azure Entra ID
+- [x] Role (`Admin`, `Worker`)
 - [ ] Zabezpieczenie Swagger
 
 ### Etap 4 – DevOps / IaC (tydz. 4)

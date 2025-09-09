@@ -1,11 +1,17 @@
+using System.Text;
 using System.Text.Json.Serialization;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using ProdApi.Context;
 using ProdApi.Middleware;
+using ProdApi.Models;
 using ProdApi.Repository;
+using ProdApi.Services;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -69,12 +75,37 @@ builder.Services.AddAutoMapper(cfg => { }, AppDomain.CurrentDomain.GetAssemblies
 
 // Rejestracja repozytorium
 builder.Services.AddScoped<ITaskItemRepository, TaskItemRepository>();
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+builder.Services.AddScoped<IUserService, UserService>();
+
+
 
 
 // Rejestruje wszystkie walidatory z tego assembly
 builder.Services.AddFluentValidationAutoValidation()
     .AddValidatorsFromAssemblyContaining<Program>();
 
+
+// Konfiguracja autentykacji JWT   
+var jwt = builder.Configuration.GetSection("Jwt");
+var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt["Key"]!));
+
+builder.Services
+        .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(opt =>
+        {
+            opt.TokenValidationParameters = new()
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = jwt["Issuer"],
+                ValidAudience = jwt["Audience"],
+                IssuerSigningKey = key
+            };
+        });
+
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -90,6 +121,9 @@ app.UseSwaggerUI(opt =>
     opt.SwaggerEndpoint("/swagger/v1/swagger.json", "Prod API v1");
     opt.RoutePrefix = "swagger"; // UI pod /swagger
 });
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseHttpsRedirection();
 app.MapControllers();

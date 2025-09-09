@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -26,6 +27,7 @@ namespace ProdApi.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<TaskItemDto>> GetAllTasks()
         {
             _logger.LogInformation("Pobieranie wszystkich zadań");
